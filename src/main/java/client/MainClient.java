@@ -19,7 +19,7 @@ import java.util.Date;
  */
 public class MainClient {
     private static Socket socket;
-    private static int SERVER_PORT = 8989;
+    private static int SERVER_PORT = 8700;
     private static String SERVER_HOST = "localhost";
     private static DataInputStream in;
     private static DataOutputStream out;
@@ -28,7 +28,8 @@ public class MainClient {
     private static int countCheckerIteration = 0;
     private static String splitSign = "/split/";
     private static WindowChat windowChat;
-    public static WindowAuthorization windowAuthorization;
+    private static WindowAuthorization windowAuthorization;
+    private static WindowSignUP windowSignUP;
 
 
     public static void main(String[] args) throws IOException {
@@ -68,11 +69,14 @@ public class MainClient {
 
                         //проверку входящих и их сплит
                         if (in.available() != 0) {
-                            String[] fromServer = in.readUTF().split(splitSign);
-                            System.out.println(new Date() + ", income= " + fromServer[0] + "/" + fromServer[1]);
+                            String tempIn = in.readUTF();
+                            String[] fromServer = tempIn.split(splitSign);
+//                            System.out.println(new Date() + ", income= " + fromServer[0] + "/" + fromServer[1]);
+                            System.out.printf("in:  %s\n", tempIn);
                             switch (fromServer[0]) {
                                 case "logpas": {
                                     switch (fromServer[1]) {
+
                                         case "goodboy": {
                                             authorization = true;
                                             windowAuthorization.dispose();
@@ -80,10 +84,12 @@ public class MainClient {
                                             windowChat.getNewMessage().grabFocus();
                                         }
                                         break;
+
                                         case "emptyField": {
                                             windowAuthorization.setTitle("wtf - empty field");
                                         }
                                         break;
+
                                         case "badboy": {
                                             windowAuthorization.setTitle("Wrong, wtf");
                                         }
@@ -91,11 +97,20 @@ public class MainClient {
                                     }
                                 }
                                 break;
+
                                 case "newMessage": {
                                     if (authorization) {
                                         windowChat.getChat().setText(windowChat.getChat().getText() + "\n" + fromServer[1]);
                                         windowChat.getChat().setCaretPosition(windowChat.getChat().getDocument().getLength());
                                     }
+                                }
+                                break;
+
+                                case "WowNewUser": {
+                                    if (fromServer [1].equals("true")){
+                                        windowSignUP.setTitle("Success");
+                                    }
+                                    else windowSignUP.setTitle("Is used");
                                 }
                                 break;
                             }
@@ -120,6 +135,7 @@ public class MainClient {
         });
         incoming.start();
     }
+
     //help iterationThread with empty messages, also can add checker bad messages
     public static void newMessage (String message) throws Exception {
         if (!(message.equals(""))) sendMessage("newMessage" + splitSign + login + ": " + message);
@@ -235,13 +251,14 @@ public class MainClient {
     }
 
     public static void sendMessage(String message) throws Exception {
-        System.out.println(new Date() + ", outcome= " + message);
+//        System.out.println(new Date() + ", outcome= " + message);
+        System.out.printf("out: %-30s %s\n", message, new Date());
         out.writeUTF(message);
         out.flush();
     }
 
     public static void signUpStage () {
-        WindowSignUP windowSignUP = new WindowSignUP();
+        windowSignUP = new WindowSignUP();
         windowSignUP.setVisible(true);
         windowAuthorization.setVisible(false);
 
@@ -257,6 +274,14 @@ public class MainClient {
                    }
                }
 
+            }
+        });
+
+        windowSignUP.getSigninButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                windowAuthorization.setVisible(true);
+                windowSignUP.setVisible(false);
             }
         });
     }

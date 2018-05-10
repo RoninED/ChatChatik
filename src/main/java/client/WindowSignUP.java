@@ -48,4 +48,7 @@ public class WindowSignUP extends JFrame {
         this.passwordField = passwordField;
     }
 
+    public JButton getSigninButton() {
+        return signinButton;
+    }
 }

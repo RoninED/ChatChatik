@@ -49,6 +49,7 @@ public class UserHandler extends Thread {
         }
     }
 
+// parser client messages, onlineChecker,
     private void multiThread() {
         Thread incomingMessages = new Thread(new Runnable() {
             @Override
@@ -59,13 +60,20 @@ public class UserHandler extends Thread {
 
                         //-проверку входящих и их сплит
                         if (in.available() != 0) {
-                            String[] fromClient = in.readUTF().split(splitSign);
-                            System.out.println(login + " " + new Date() + ", income= " + fromClient[0] + "/" + fromClient[1] + ". autorization = " + authorization);
+                            String tempIncome = in.readUTF();
+                            String[] fromClient = tempIncome.split(splitSign);
+//                            System.out.println(login + " "  + ", income= " + tempIncome + "   - autorization = " + authorization);
+                            System.out.printf("%-10s in:  %s\n", login, tempIncome);
                             switch (fromClient[0]) {
+
                                 //signUp
                                 case "WowNewUser": {
-                                    MainServer.signUpNewUser(fromClient[1], fromClient[2]);
+                                    if(MainServer.signUpNewUser(fromClient[1], fromClient[2]))
+                                        sendMessage("WowNewUser" + splitSign + "true");
+                                    else sendMessage("WowNewUser" + splitSign + "false");
+                                    break;
                                 }
+
                                 //authorization
                                 case "logpas": {
                                     if (fromClient[1].equals("") | fromClient.length != 3)
@@ -81,10 +89,13 @@ public class UserHandler extends Thread {
                                     }
                                     break;
                                 }
+
                                 // new messages for users
                                 case "newMessage": {
                                     MainServer.distributionToOnlineUsers((fromClient[0] + splitSign + fromClient[1]));
+                                    break;
                                 }
+
                             }
                         }
 
@@ -116,7 +127,8 @@ public class UserHandler extends Thread {
     }
 
     public synchronized void sendMessage(String message) throws Exception {
-        System.out.println(login + " " + new Date() + ", outcome= " + message + ". autorization = " + authorization);
+//        System.out.println(login + " " + ", outcome= " + message + ". autorization = " + authorization);
+        System.out.printf("%-10s out: %-30s +%s\n", login, message, new Date());
         out.writeUTF(message);
         out.flush();
     }
