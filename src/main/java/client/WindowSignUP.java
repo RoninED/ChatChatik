@@ -13,7 +13,7 @@ public class WindowSignUP extends JFrame {
     private JButton signinButton = new JButton("Sign In");
 
     public WindowSignUP() throws HeadlessException {
-        setSize(200, 200);
+        setSize(200, 300);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(6, 1));

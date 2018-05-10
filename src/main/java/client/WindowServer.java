@@ -12,10 +12,10 @@ public class WindowServer extends JFrame {
     private JButton acceptButton = new JButton("Accept");
 
     public WindowServer() throws HeadlessException {
-        setSize(300, 100);
+        setSize(200, 300);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(3, 2));
+        setLayout(new GridLayout(5, 1));
         setResizable(false);
         setTitle("ServerAddress");
         add(new JLabel("Host"));

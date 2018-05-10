@@ -166,8 +166,6 @@ public class MainClient {
             }
         });
 
-
-
         windowAuthorization.getPasswordField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent es) {
@@ -284,6 +282,22 @@ public class MainClient {
                 windowSignUP.setVisible(false);
             }
         });
+
+        windowSignUP.getLoginField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent es) {
+                if (es.getKeyCode() == KeyEvent.VK_ENTER) windowSignUP.getPasswordField().grabFocus();
+            }
+        });
+
+        windowSignUP.getPasswordField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent es) {
+                if (es.getKeyCode() == KeyEvent.VK_ENTER) windowSignUP.getSignupButton().doClick();
+            }
+        });
+
+
     }
 
 

@@ -12,12 +12,14 @@ public class WindowAuthorization extends JFrame {
     private JButton signInButton = new JButton("Sign in");
     private JButton signUpButton = new JButton("Sign up");
     private JButton serverButton = new JButton("Server");
+    private JButton deleteButton = new JButton("Delete account");
+    private JMenuBar menuBar = new JMenuBar();
 
     public WindowAuthorization() throws HeadlessException {
-        setSize(300, 100);
+        setSize(200, 300);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(4, 2));
+        setLayout(new GridLayout(7, 1));
         setResizable(false);
         add(new JLabel("Login"));
         add(loginField);
@@ -26,7 +28,16 @@ public class WindowAuthorization extends JFrame {
         add(signInButton);
         add(signUpButton);
         add(serverButton);
+//        menuBar.add(menu)
+        setJMenuBar(menuBar);
         setVisible(true);
+    }
+
+    public JMenu menu (){
+        JMenu settingsMenu = new JMenu("Settings");
+        JMenuItem deleteMenu = new JMenuItem();
+        settingsMenu.add(deleteMenu);
+        return settingsMenu;
     }
 
     public JTextField getLoginField() {
