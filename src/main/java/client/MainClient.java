@@ -30,6 +30,7 @@ public class MainClient {
     private static WindowChat windowChat;
     private static WindowAuthorization windowAuthorization;
     private static WindowSignUP windowSignUP;
+    private static WindowDeleteAccount windowDeleteAccount;
 
 
     public static void main(String[] args) throws IOException {
@@ -87,13 +88,16 @@ public class MainClient {
 
                                         case "emptyField": {
                                             windowAuthorization.setTitle("wtf - empty field");
+                                            windowAuthorization.windowActive(true);
                                         }
                                         break;
 
                                         case "badboy": {
                                             windowAuthorization.setTitle("Wrong, wtf");
+                                            windowAuthorization.windowActive(true);
                                         }
                                         break;
+
                                     }
                                 }
                                 break;
@@ -107,12 +111,20 @@ public class MainClient {
                                 break;
 
                                 case "WowNewUser": {
-                                    if (fromServer [1].equals("true")){
+                                    if (fromServer[1].equals("true")) {
                                         windowSignUP.setTitle("Success");
-                                    }
-                                    else windowSignUP.setTitle("Is used");
+                                    } else windowSignUP.setTitle("Error");
+                                    windowSignUP.windowActive(true);
                                 }
                                 break;
+
+                                case "delete": {
+                                    if (fromServer[1].equals("deleteSuccess"))
+                                        windowDeleteAccount.setTitle("Success");
+                                    else windowDeleteAccount.setTitle("Error");
+                                    windowDeleteAccount.windowActive(true);
+                                    break;
+                                }
                             }
                         }
 
@@ -137,7 +149,7 @@ public class MainClient {
     }
 
     //help iterationThread with empty messages, also can add checker bad messages
-    public static void newMessage (String message) throws Exception {
+    public static void newMessage(String message) throws Exception {
         if (!(message.equals(""))) sendMessage("newMessage" + splitSign + login + ": " + message);
     }
 
@@ -151,6 +163,7 @@ public class MainClient {
                 try {
                     login = windowAuthorization.getLoginField().getText();
                     sendMessage("logpas" + splitSign + login + splitSign + String.valueOf((windowAuthorization.getPasswordField().getPassword())));
+                    windowAuthorization.windowActive(false);
                     Thread.sleep(500);
                 } catch (IOException ioe) {
                 } catch (Exception e1) {
@@ -173,17 +186,24 @@ public class MainClient {
             }
         });
 
-        windowAuthorization.getServerButton().addActionListener(new ActionListener() {
+        windowAuthorization.getServerMenu().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 serverWindowStage();
             }
         });
 
-        windowAuthorization.getSignUpButton().addActionListener(new ActionListener() {
+        windowAuthorization.getSignUpMenu().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 signUpStage();
+            }
+        });
+
+        windowAuthorization.getDeleteMenu().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteAccountantStage();
             }
         });
     }
@@ -215,7 +235,7 @@ public class MainClient {
     }
 
     //when client changing server
-    public static void serverWindowStage () {
+    public static void serverWindowStage() {
         windowAuthorization.setVisible(false);
         final WindowServer windowServer = new WindowServer();
         windowServer.getHostField().setText(getServerHost());
@@ -241,12 +261,60 @@ public class MainClient {
                 setServerHost(windowServer.getHostField().getText());
                 setServerPort(Integer.parseInt(windowServer.getPortField().getText()));
                 authorizationStage();
-                windowAuthorization.setTitle(getServerHost()+"/"+getServerPort());
+                windowAuthorization.setTitle(getServerHost() + "/" + getServerPort());
                 windowServer.dispose();
             }
         });
 
     }
+
+    public static void deleteAccountantStage() {
+        windowDeleteAccount = new WindowDeleteAccount();
+        windowAuthorization.setVisible(false);
+        windowDeleteAccount.setVisible(true);
+
+        windowDeleteAccount.getLoginField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent es) {
+                if (es.getKeyCode() == KeyEvent.VK_ENTER) windowDeleteAccount.getPasswordField().grabFocus();
+            }
+        });
+
+        windowDeleteAccount.getPasswordField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent es) {
+                if (es.getKeyCode() == KeyEvent.VK_ENTER) windowDeleteAccount.getRemoveButton().doClick();
+            }
+        });
+
+
+        windowDeleteAccount.getRemoveButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (windowDeleteAccount.getLoginField().getText().equals("") | windowDeleteAccount.getPasswordField().getText().equals(""))
+                        windowDeleteAccount.setTitle("Empty field");
+                    else {
+                        sendMessage("delete" + splitSign + windowDeleteAccount.getLoginField().getText() + splitSign + windowDeleteAccount.getPasswordField().getText());
+                        windowDeleteAccount.windowActive(false);
+                    }
+                    Thread.sleep(500);
+                } catch (IOException ioe) {
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        windowDeleteAccount.getSigninButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                windowDeleteAccount.setVisible(false);
+                authorizationStage();
+            }
+        });
+    }
+
 
     public static void sendMessage(String message) throws Exception {
 //        System.out.println(new Date() + ", outcome= " + message);
@@ -255,7 +323,7 @@ public class MainClient {
         out.flush();
     }
 
-    public static void signUpStage () {
+    public static void signUpStage() {
         windowSignUP = new WindowSignUP();
         windowSignUP.setVisible(true);
         windowAuthorization.setVisible(false);
@@ -263,14 +331,16 @@ public class MainClient {
         windowSignUP.getSignupButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               if (windowSignUP.getLoginField().getText().equals("") | windowSignUP.getPasswordField().getText().equals("")) JOptionPane.showMessageDialog(null, "Заполните все строки");
-               else {
-                   try {
-                       sendMessage("WowNewUser" + splitSign + windowSignUP.getLoginField().getText() + splitSign + windowSignUP.getPasswordField().getText());
-                   } catch (Exception e1) {
-                       e1.printStackTrace();
-                   }
-               }
+                if (windowSignUP.getLoginField().getText().equals("") | windowSignUP.getPasswordField().getText().equals(""))
+                    JOptionPane.showMessageDialog(null, "Заполните все строки");
+                else {
+                    try {
+                        sendMessage("WowNewUser" + splitSign + windowSignUP.getLoginField().getText() + splitSign + windowSignUP.getPasswordField().getText());
+                        windowSignUP.windowActive(false);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
 
             }
         });

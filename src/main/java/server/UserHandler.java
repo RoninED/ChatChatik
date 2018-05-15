@@ -90,6 +90,15 @@ public class UserHandler extends Thread {
                                     break;
                                 }
 
+                                //authorization
+                                case "delete": {
+                                        if (MainServer.deleteAccountant(fromClient[1], fromClient[2])) {
+                                            sendMessage("delete" + splitSign + "deleteSuccess");
+                                            System.out.println(fromClient [1] + " has deleted / " + Thread.currentThread());
+                                        } else sendMessage("delete" + splitSign + "deleteError");
+                                    break;
+                                }
+
                                 // new messages for users
                                 case "newMessage": {
                                     MainServer.distributionToOnlineUsers((fromClient[0] + splitSign + fromClient[1]));

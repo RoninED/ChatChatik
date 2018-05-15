@@ -6,24 +6,24 @@ import java.awt.*;
 /**
  * Created by Eduard on 9/27/2017.
  */
-public class WindowSignUP extends JFrame {
+public class WindowDeleteAccount extends JFrame {
     private JTextField loginField =new JTextField();
     private JTextField passwordField =new JTextField();
-    private JButton signupButton = new JButton("Sign Up");
+    private JButton removeButton = new JButton("Remove");
     private JButton signinButton = new JButton("Sign In");
 
-    public WindowSignUP() throws HeadlessException {
+    public WindowDeleteAccount() throws HeadlessException {
         setSize(200, 300);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(6, 1));
         setResizable(false);
-        setTitle("SignUp");
+        setTitle("Remove account");
         add(new JLabel("Login"));
         add(loginField);
         add(new JLabel("Password"));
         add(passwordField);
-        add(signupButton);
+        add(removeButton);
         add(signinButton);
         setVisible(true);
     }
@@ -36,8 +36,8 @@ public class WindowSignUP extends JFrame {
         return passwordField;
     }
 
-    public JButton getSignupButton() {
-        return signupButton;
+    public JButton getRemoveButton() {
+        return removeButton;
     }
 
     public void setLoginField(JTextField loginField) {
@@ -53,7 +53,7 @@ public class WindowSignUP extends JFrame {
     }
 
     public void windowActive (boolean active) {
-        signupButton.setEnabled(active);
+        removeButton.setEnabled(active);
         signinButton.setEnabled(active);
         loginField.setEnabled(active);
         passwordField.setEnabled(active);

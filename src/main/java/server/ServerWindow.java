@@ -4,28 +4,29 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ServerWindow extends JFrame {
-    private JTextField loginField = new JTextField();
-    private JTextField passwordField = new JTextField();
-    private JButton signupButton = new JButton("Sign Up");
-    private JButton signinButton = new JButton("Sign In");
+    private JButton close = new JButton("Close server");
+    private JButton settings = new JButton("Settings");
 
     public ServerWindow() throws HeadlessException {
         setSize(200, 300);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(6, 1));
+        setLayout(new GridLayout(2, 1));
         setResizable(false);
         setTitle("SignUp");
-        add(new JLabel("Login"));
-        add(loginField);
-        add(new JLabel("Password"));
-        add(passwordField);
-        add(signupButton);
-        add(signinButton);
+        add(close);
+        add(settings);
         setVisible(true);
     }
 
+    public JButton getClose() {
+        return close;
+    }
 
+    public JButton getSettings() {
+        return settings;
+    }
 }
 
 

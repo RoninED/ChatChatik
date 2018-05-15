@@ -41,6 +41,7 @@ public class ExcelDataUsers {
                 workbook = new XSSFWorkbook();
                 sheet = workbook.createSheet("1");
                 workbook.write(fileOutputStream);
+                writeToExcel("8700", 2, 0);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -95,13 +96,27 @@ public class ExcelDataUsers {
         }
     }
 
-    public static void readCell(int col, int row) {
+    public void readCell(int col, int row) {
         try {
             System.out.println(workbook.getSheetAt(0).getRow(row).getCell(col).getStringCellValue());
         } catch (NullPointerException npe) {
             System.out.println("");
         }
 
+    }
+
+    public void setPort (String port) {
+        writeToExcel(port, 2, 0);
+    }
+
+    public Integer getPort() {
+        int tempPort;
+        try {
+            tempPort = Integer.parseInt(workbook.getSheetAt(0).getRow(0).getCell(2).getStringCellValue());
+        } catch (IllegalStateException ISE) {
+            tempPort = (int) workbook.getSheetAt(0).getRow(0).getCell(2).getNumericCellValue();
+        }
+        return tempPort;
     }
 
     public static int checkerFreeRowPlace() {
@@ -146,5 +161,24 @@ public class ExcelDataUsers {
         } catch (NullPointerException npe) {
             System.out.println("-(The cell is already deleted");
         }
+    }
+
+    public boolean deleteAccount(String login, String password) {
+        boolean result = false;
+
+        for (int i = 0; i < workbook.getSheetAt(0).getLastRowNum() + 1; i++) {
+            try {
+
+                if (workbook.getSheetAt(0).getRow(i).getCell(0).getStringCellValue().equals(login)
+                        & workbook.getSheetAt(0).getRow(i).getCell(1).getStringCellValue().equals(password)) {
+                    deleteCell(i, 0);
+                    deleteCell(i, 1);
+                    result = true;
+                    break;
+                }
+            } catch (NullPointerException npe) {
+            }
+        }
+        return result;
     }
 }

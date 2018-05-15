@@ -1,18 +1,11 @@
 package server;
 
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import javax.swing.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by Eduard on 10/1/2017.
@@ -20,16 +13,21 @@ import java.util.Iterator;
 public class MainServer {
     private static ServerSocket server;
     private static Socket socket;
-    private final static int SERVER_PORT = 8700;
-    private static TemporarySQLdata[] dataUsers;
+    private static int serverPort;
     private static ArrayList<UserHandler> onlineUsers;
     private static ExcelDataUsers excelDataUsers;
+    private static ServerWindow serverWindow;
+    private static WindowServerSettings windowServerSettings;
 
 
     public static void main(String[] args) throws IOException {
-        server = new ServerSocket(SERVER_PORT);
-        onlineUsers = new ArrayList<UserHandler>();
         excelDataUsers = new ExcelDataUsers();
+        setServerPort(excelDataUsers.getPort());
+        server = new ServerSocket(serverPort);
+        onlineUsers = new ArrayList<UserHandler>();
+        windowServerStage();
+
+
 
         //create user thread and add in dataOnline users
         while (true) try {
@@ -64,6 +62,10 @@ public class MainServer {
         return excelDataUsers.foundAndCheckLoginAndPassword(login, password);
     }
 
+    public static synchronized boolean deleteAccountant(String login, String password) {
+        return excelDataUsers.deleteAccount(login, password);
+    }
+
     //Send any message to all new users
     public synchronized static void distributionToOnlineUsers(String message) throws Exception {
         for (UserHandler ou : onlineUsers
@@ -83,21 +85,65 @@ public class MainServer {
     }
 
     public synchronized static boolean signUpNewUser(String login, String password) {
-        return excelDataUsers.signUp(login,password);
+        return excelDataUsers.signUp(login, password);
+    }
+
+    public static void windowServerStage() {
+        serverWindow = new ServerWindow();
+        serverWindow.setVisible(true);
+
+
+        serverWindow.getClose().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        serverWindow.getSettings().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                serverSettingsStage();
+            }
+        });
+    }
+
+    public static void serverSettingsStage() {
+        windowServerSettings = new WindowServerSettings();
+        windowServerSettings.setVisible(true);
+        windowServerSettings.getPortField().setText(String.valueOf(getServerPort()));
+
+        windowServerSettings.getAcceptButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    excelDataUsers.setPort(windowServerSettings.getPortField().getText());
+                    System.exit(0);
+            }
+        });
+
+        windowServerSettings.getCloseButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                windowServerSettings.setVisible(false);
+            }
+        });
+
     }
 
 
 //GETTER and SETTER
 //-------------------------------------------------------------------------------------------
 
-
-    public synchronized static TemporarySQLdata[] getDataUsers() {
-        return dataUsers;
-    }
-
     public synchronized static ArrayList<UserHandler> getOnlineUsers() {
         return onlineUsers;
     }
 
+    public static int getServerPort() {
+        return serverPort;
+    }
+
+    public static void setServerPort(int serverPort) {
+        MainServer.serverPort = serverPort;
+    }
 }
 
