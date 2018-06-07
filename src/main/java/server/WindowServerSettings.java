@@ -25,8 +25,6 @@ public class WindowServerSettings extends JFrame {
         setVisible(true);
     }
 
-
-
     public JTextField getPortField() {
         return portField;
     }
